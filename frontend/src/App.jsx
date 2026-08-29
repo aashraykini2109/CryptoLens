@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 
 import CryptoHealthMap from './CryptoHealthMap';
+import Findings from './Findings';
 
 export default function App() {
   const [appState, setAppState] = useState('idle');
@@ -666,20 +667,10 @@ export default function App() {
             ================================================= */}
 
             {activeTab === 'findings' && (
-
-              <div className="flex-1 bg-[#111827] border border-slate-800 rounded-xl flex flex-col items-center justify-center p-8">
-
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  All Cryptographic Findings
-                </h3>
-
-                <p className="text-slate-500">
-                  [ Member 3: Place the full detailed data table here ]
-                </p>
-
-              </div>
-
-            )}
+  <Findings
+    onOpenAI={() => setActiveTab('ai_insights')}
+  />
+)}
 
             {/* =================================================
                 AI INSIGHTS TAB
