@@ -129,6 +129,7 @@ export default function App() {
       {/* =================================================
           SIDEBAR
       ================================================= */}
+      {appState === 'complete' && (
 
       <div className="w-64 border-r border-slate-800/60 p-4 flex flex-col gap-6 bg-[#0a0f16] z-10 relative">
 
@@ -172,6 +173,7 @@ export default function App() {
 
         </nav>
       </div>
+      )}
 
       {/* =================================================
           MAIN CONTENT
