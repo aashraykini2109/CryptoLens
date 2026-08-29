@@ -1,10 +1,8 @@
-import ast
 from pathlib import Path
 
-from detection_rules import DETECTION_RULES
-from models import Finding
-from risk_engine import enrich_finding
-from report_generator import save_report
+from .detection_rules import DETECTION_RULES
+from .models import Finding
+from .risk_engine import enrich_finding
 
 
 EXCLUDED_DIRECTORIES = {
@@ -16,72 +14,57 @@ EXCLUDED_DIRECTORIES = {
 }
 
 
-def scan_file(file_path):
-    file_path = Path(file_path)
-
-    with open(file_path, "r", encoding="utf-8") as file:
-        source_code = file.read()
-
-    try:
-        tree = ast.parse(source_code)
-    except SyntaxError:
-        return []
-
-    findings = []
-    lines = source_code.splitlines()
-
-    for node in ast.walk(tree):
-
-        if isinstance(node, ast.Call):
-
-            if isinstance(node.func, ast.Attribute):
-
-                function_name = node.func.attr
-
-                for algorithm, patterns in DETECTION_RULES.items():
-
-                    for pattern in patterns:
-
-                        if pattern.split(".")[-1] == function_name:
-
-                            line_number = node.lineno
-                            evidence = lines[line_number - 1].strip()
-
-                            finding = Finding(
-                                algorithm=algorithm,
-                                file=str(file_path),
-                                line=line_number,
-                                evidence=evidence
-                            )
-
-                            finding = enrich_finding(finding)
-
-                            findings.append(finding)
-
-    return findings
-
-
 def scan_project(project_path):
     project_path = Path(project_path)
 
-    all_findings = []
+    findings = []
 
-    for file_path in project_path.rglob("*.py"):
+    if not project_path.exists():
+        raise FileNotFoundError(
+            f"Project path not found: {project_path}"
+        )
 
-        if any(part in EXCLUDED_DIRECTORIES for part in file_path.parts):
+    for file_path in project_path.rglob("*"):
+
+        if not file_path.is_file():
             continue
 
-        findings = scan_file(file_path)
-        all_findings.extend(findings)
+        if any(
+            excluded_directory in file_path.parts
+            for excluded_directory in EXCLUDED_DIRECTORIES
+        ):
+            continue
 
-    return all_findings
+        try:
+            content = file_path.read_text(
+                encoding="utf-8",
+                errors="ignore"
+            )
 
+        except Exception:
+            continue
 
-if __name__ == "__main__":
-    results = scan_project("sample_project")
+        lines = content.splitlines()
 
-    report = save_report(results)
+        for line_number, line in enumerate(lines, start=1):
 
-    print("Scan completed!")
-    print(f"Total findings: {report['total_findings']}")
-    print("Report saved to scan_report.json")
+            for algorithm, patterns in DETECTION_RULES.items():
+
+                for pattern in patterns:
+
+                    if pattern in line:
+
+                        finding = Finding(
+                            algorithm=algorithm,
+                            file=str(file_path),
+                            line=line_number,
+                            evidence=line.strip()
+                        )
+
+                        finding = enrich_finding(finding)
+
+                        findings.append(finding)
+
+                        break
+
+    return findings

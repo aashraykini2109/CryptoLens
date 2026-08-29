@@ -1,7 +1,7 @@
 import json
 from dataclasses import asdict
 
-from models import Finding
+from .models import Finding
 
 
 def generate_report(findings):

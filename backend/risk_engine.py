@@ -1,4 +1,4 @@
-from models import Finding
+from .models import Finding
 
 
 RISK_RULES = {

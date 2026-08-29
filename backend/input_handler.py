@@ -4,9 +4,8 @@ import subprocess
 from pathlib import Path
 from urllib.parse import urlparse
 
-
-from scanner import scan_project
-from report_generator import save_report
+from .scanner import scan_project
+from .report_generator import save_report
 
 
 EXCLUDED_DIRECTORIES = {
@@ -184,9 +183,9 @@ if __name__ == "__main__":
     # -----------------------------------
 
     test_github_url = (
-    "https://github.com/aashraykini2109/"
-    "CryptoLens/tree/Tejareddy"
-)
+        "https://github.com/aashraykini2109/"
+        "CryptoLens/tree/Tejareddy"
+    )
 
     try:
         scan_github(test_github_url)
