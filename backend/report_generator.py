@@ -1,86 +1,19 @@
 import json
 from dataclasses import asdict
 
-
-def calculate_summary(findings):
-    summary = {
-        "critical": 0,
-        "quantum_vulnerable": 0,
-        "safe": 0
-    }
-
-    for finding in findings:
-        if finding.severity in ["CRITICAL", "HIGH"]:
-            summary["critical"] += 1
-
-        elif finding.severity == "QUANTUM_VULNERABLE":
-            summary["quantum_vulnerable"] += 1
-
-        else:
-            summary["safe"] += 1
-
-    return summary
-
-
-def calculate_health_score(findings):
-    total_findings = len(findings)
-
-    if total_findings == 0:
-        return 100
-
-    severity_weights = {
-        "CRITICAL": 10,
-        "HIGH": 8,
-        "MEDIUM": 5,
-        "LOW": 2,
-        "SAFE": 0,
-        "QUANTUM_VULNERABLE": 6
-    }
-
-    total_risk = sum(
-        severity_weights.get(finding.severity, 3)
-        for finding in findings
-    )
-
-    maximum_possible_risk = total_findings * 10
-
-    health_score = round(
-        100 - (total_risk / maximum_possible_risk) * 100
-    )
-
-    return max(0, min(100, health_score))
-
-
-def calculate_quantum_score(findings):
-    total_findings = len(findings)
-
-    if total_findings == 0:
-        return 100
-
-    quantum_vulnerable_count = sum(
-        1 for finding in findings
-        if finding.severity == "QUANTUM_VULNERABLE"
-    )
-
-    quantum_score = round(
-        ((total_findings - quantum_vulnerable_count) / total_findings) * 100
-    )
-
-    return quantum_score
+from .models import Finding
+from .risk_engine import calculate_health_score, calculate_severity_summary
 
 
 def generate_report(findings):
-    summary = calculate_summary(findings)
+    health_score = calculate_health_score(findings)
+    severity_summary = calculate_severity_summary(findings)
 
     report = {
-        "health_score": calculate_health_score(findings),
-        "quantum_score": calculate_quantum_score(findings),
-        "summary": summary,
+        "health_score": health_score,
         "total_findings": len(findings),
-        "findings": [
-            asdict(finding)
-            for finding in findings
-        ]
+        "severity_summary": severity_summary,
+        "findings": [asdict(finding) for finding in findings]
     }
 
     return report
