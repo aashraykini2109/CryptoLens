@@ -1,0 +1,14 @@
+{
+    "total_findings": 1,
+    "findings": [
+        {
+            "algorithm": "MD5",
+            "file": "sample_project\\auth.py",
+            "line": 7,
+            "evidence": "hashed = hashlib.md5(password.encode()).hexdigest()",
+            "severity": "HIGH",
+            "description": "MD5 is a cryptographically weak hashing algorithm.",
+            "recommendation": "Use SHA-256 or a password hashing algorithm such as Argon2 or bcrypt."
+        }
+    ]
+}

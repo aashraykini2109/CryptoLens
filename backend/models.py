@@ -7,3 +7,6 @@ class Finding:
     file: str
     line: int
     evidence: str
+    severity: str = ""
+    description: str = ""
+    recommendation: str = ""
