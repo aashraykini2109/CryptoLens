@@ -209,5 +209,5 @@ export default function FluidCanvas() {
     return()=>{cancelAnimationFrame(animId);window.removeEventListener('resize',resize);window.removeEventListener('mousemove',onMove);};
   },[]);
 
-  return <canvas ref={canvasRef} style={{position:'fixed',inset:0,width:'100vw',height:'100vh',pointerEvents:'none',zIndex:0}}/>;
+  return <canvas ref={canvasRef} style={{position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:1}}/>;
 }
