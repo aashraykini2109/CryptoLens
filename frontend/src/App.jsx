@@ -11,6 +11,7 @@ import {
 import Member3Dashboard from './Member3Dashboard';
 import CryptoHealthMap from './CryptoHealthMap';
 import Findings from './Findings';
+import ASTVisualizer from './ASTVisualizer';
 
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
@@ -26,12 +27,6 @@ export default function App() {
     'INITIALIZING SCAN...'
   );
   const [scanProgress, setScanProgress] = useState(0);
-
-  /*
-   * ============================================================
-   * HACKER TEXT / SCANNER ANIMATION
-   * ============================================================
-   */
 
   useEffect(() => {
     if (appState !== 'scanning') {
@@ -69,12 +64,6 @@ export default function App() {
     return () => clearInterval(textInterval);
   }, [appState]);
 
-  /*
-   * ============================================================
-   * PREPARE DASHBOARD DATA
-   * ============================================================
-   */
-
   const prepareDashboardData = (report) => {
     const findings = Array.isArray(report?.findings)
       ? report.findings
@@ -101,9 +90,6 @@ export default function App() {
         low += 1;
       }
 
-      /*
-       * RSA is currently treated as quantum-vulnerable.
-       */
       if (
         finding?.algorithm &&
         String(finding.algorithm).toUpperCase() === 'RSA'
@@ -145,8 +131,11 @@ export default function App() {
       ...report,
 
       health_score: healthScore,
-
       quantum_score: quantumScore,
+
+      ast: report?.ast || {
+        trees: [],
+      },
 
       summary: {
         critical,
@@ -166,12 +155,6 @@ export default function App() {
       },
     };
   };
-
-  /*
-   * ============================================================
-   * GITHUB URL SCAN
-   * ============================================================
-   */
 
   const handleUrlScan = async () => {
     if (!repoUrl.trim()) {
@@ -239,12 +222,6 @@ export default function App() {
       setScanProgress(0);
     }
   };
-
-  /*
-   * ============================================================
-   * ZIP FILE SCAN
-   * ============================================================
-   */
 
   const handleFileUpload = async (event) => {
     const file = event.target.files?.[0];
@@ -326,17 +303,8 @@ export default function App() {
       setScanProgress(0);
     }
 
-    /*
-     * Allows the same file to be selected again.
-     */
     event.target.value = '';
   };
-
-  /*
-   * ============================================================
-   * NAVIGATION STYLE
-   * ============================================================
-   */
 
   const getNavStyle = (tabName) => {
     return activeTab === tabName
@@ -344,15 +312,10 @@ export default function App() {
       : 'text-left px-4 py-2.5 text-slate-400 hover:bg-[#111827] hover:text-slate-200 rounded-lg transition';
   };
 
-  /*
-   * ============================================================
-   * IDLE SCREEN
-   * ============================================================
-   */
-
   if (appState === 'idle') {
     return (
       <div className="flex h-screen w-screen bg-[#0a0f16] text-slate-300 font-sans items-center justify-center p-6 overflow-hidden">
+
         <div className="bg-[#111827] border border-slate-800 rounded-2xl p-10 text-center max-w-xl w-full shadow-2xl">
 
           <div className="flex items-center justify-center gap-3 mb-4">
@@ -370,13 +333,10 @@ export default function App() {
 
           {errorMessage && (
             <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-left">
-
               <div className="flex items-start gap-3">
-
                 <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
 
                 <div>
-
                   <p className="text-red-400 font-semibold">
                     Scan failed
                   </p>
@@ -384,18 +344,13 @@ export default function App() {
                   <p className="text-red-300/80 text-sm mt-1 break-words">
                     {errorMessage}
                   </p>
-
                 </div>
-
               </div>
-
             </div>
           )}
 
           <div className="flex gap-3 mb-8">
-
             <div className="relative flex-1">
-
               <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
 
               <input
@@ -413,7 +368,6 @@ export default function App() {
                 }}
                 className="w-full bg-[#0a0f16] border border-slate-700 rounded-lg py-3 pl-11 pr-4 text-white focus:outline-none focus:border-orange-500 transition"
               />
-
             </div>
 
             <button
@@ -423,11 +377,9 @@ export default function App() {
             >
               Scan URL
             </button>
-
           </div>
 
           <div className="flex items-center gap-4 mb-8">
-
             <div className="flex-1 h-px bg-slate-800" />
 
             <span className="text-slate-500 text-sm font-medium">
@@ -435,11 +387,9 @@ export default function App() {
             </span>
 
             <div className="flex-1 h-px bg-slate-800" />
-
           </div>
 
           <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-700 bg-[#0a0f16] rounded-xl p-10 hover:border-slate-500 transition cursor-pointer group">
-
             <input
               type="file"
               accept=".zip"
@@ -456,26 +406,17 @@ export default function App() {
             <span className="text-slate-500 text-sm">
               Max file size: 50MB
             </span>
-
           </label>
-
         </div>
       </div>
     );
   }
-
-  /*
-   * ============================================================
-   * SCANNING SCREEN
-   * ============================================================
-   */
 
   if (appState === 'scanning') {
     return (
       <div className="flex h-screen w-screen bg-[#0a0f16] text-slate-300 font-sans items-center justify-center p-6 overflow-hidden flex-col">
 
         <div className="relative flex items-center justify-center w-32 h-32 mb-8">
-
           <div className="absolute inset-0 bg-orange-500 blur-3xl opacity-20 animate-pulse rounded-full" />
 
           <div
@@ -494,69 +435,49 @@ export default function App() {
           />
 
           <Cpu className="w-10 h-10 text-orange-400 animate-pulse relative z-10" />
-
         </div>
 
         <div className="bg-[#111827] border border-slate-800 p-6 rounded-lg w-full max-w-[500px] shadow-2xl relative overflow-hidden">
-
           <div className="absolute top-0 left-0 w-full h-0.5 bg-orange-500 shadow-[0_0_10px_#f97316]" />
 
           <div className="flex justify-between items-end mb-3">
-
             <div className="flex items-center gap-3 text-orange-400 font-mono font-bold text-sm sm:text-base">
-
               <FileCode2 className="w-5 h-5 shrink-0" />
 
               <span className="tracking-widest">
                 {scrambleText}
               </span>
-
             </div>
 
             <span className="text-white font-bold font-mono text-xl">
               {scanProgress}%
             </span>
-
           </div>
 
           <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-
             <div
               className="bg-orange-500 h-full transition-all duration-300 ease-linear"
               style={{
                 width: `${scanProgress}%`,
               }}
             />
-
           </div>
-
         </div>
-
       </div>
     );
   }
 
-  /*
-   * ============================================================
-   * COMPLETE / DASHBOARD STATE
-   * ============================================================
-   */
-
   return (
     <div className="flex h-screen bg-[#0a0f16] text-slate-300 font-sans overflow-hidden">
-
-      {/* SIDEBAR */}
 
       <div className="w-64 border-r border-slate-800/60 p-4 flex flex-col gap-6 bg-[#0a0f16] z-10 relative">
 
         <div className="flex items-center gap-3 px-2 mt-2 mb-4">
-
           <Lock className="w-6 h-6 text-orange-400" />
 
           <span className="text-xl font-bold text-white tracking-wide">
             CryptoLens
           </span>
-
         </div>
 
         <nav className="flex flex-col gap-1">
@@ -597,22 +518,25 @@ export default function App() {
             AI Insights
           </button>
 
-        </nav>
+          <button
+            onClick={() =>
+              setActiveTab('ast')
+            }
+            className={getNavStyle('ast')}
+          >
+            AST Analysis
+          </button>
 
+        </nav>
       </div>
 
-      {/* MAIN CONTENT */}
-
       <div className="flex-1 overflow-y-auto p-10 relative flex flex-col">
-
-        {/* HEADER */}
 
         <div className="flex justify-between items-start mb-8">
 
           <div>
 
             <h1 className="text-3xl font-bold text-white mb-1">
-
               {activeTab === 'dashboard' &&
                 'Security Dashboard'}
 
@@ -625,6 +549,8 @@ export default function App() {
               {activeTab === 'ai_insights' &&
                 'AI Remediation Insights'}
 
+              {activeTab === 'ast' &&
+                'AST Analysis'}
             </h1>
 
             <p className="text-slate-400">
@@ -641,8 +567,10 @@ export default function App() {
               {activeTab === 'ai_insights' &&
                 'Automated suggestions for NIST-compliant migrations.'}
 
-            </p>
+              {activeTab === 'ast' &&
+                'Relevant branches of the actual Python AST used by CryptoLens.'}
 
+            </p>
           </div>
 
           <button
@@ -660,18 +588,10 @@ export default function App() {
 
         </div>
 
-        {/* =====================================================
-            DASHBOARD
-        ===================================================== */}
-
         {activeTab === 'dashboard' && (
           <>
 
-            {/* SCORE CARDS */}
-
             <div className="grid grid-cols-4 gap-4 mb-6">
-
-              {/* HEALTH SCORE */}
 
               <div className="bg-[#111827] border border-slate-800 p-6 rounded-xl text-center flex flex-col justify-center">
 
@@ -680,13 +600,11 @@ export default function App() {
                 </h3>
 
                 <div className="text-4xl font-bold text-white mb-3">
-
                   {scanData?.health_score ?? '--'}
 
                   <span className="text-xl text-slate-500 font-normal">
                     /100
                   </span>
-
                 </div>
 
                 <span
@@ -702,10 +620,7 @@ export default function App() {
                       : 'Needs attention'
                     : 'Scan data unavailable'}
                 </span>
-
               </div>
-
-              {/* TOTAL FINDINGS */}
 
               <div className="bg-[#111827] border border-slate-800 p-6 rounded-xl text-center flex flex-col justify-center">
 
@@ -720,10 +635,7 @@ export default function App() {
                 <span className="text-slate-500 text-sm">
                   Across your codebase
                 </span>
-
               </div>
-
-              {/* CRITICAL RISKS */}
 
               <div className="bg-[#111827] border border-slate-800 p-6 rounded-xl text-center flex flex-col justify-center">
 
@@ -738,10 +650,7 @@ export default function App() {
                 <span className="text-slate-500 text-sm">
                   Require immediate attention
                 </span>
-
               </div>
-
-              {/* QUANTUM RISKS */}
 
               <div className="bg-[#111827] border border-slate-800 p-6 rounded-xl text-center flex flex-col justify-center">
 
@@ -756,16 +665,11 @@ export default function App() {
                 <span className="text-slate-500 text-sm">
                   Future migration required
                 </span>
-
               </div>
 
             </div>
 
-            {/* HEALTH MAP + TOP FINDINGS */}
-
             <div className="grid grid-cols-3 gap-6">
-
-              {/* HEALTH MAP */}
 
               <div className="col-span-2 bg-[#111827] border border-slate-800 rounded-xl p-6 min-h-[400px] flex flex-col">
 
@@ -795,14 +699,10 @@ export default function App() {
                 </div>
 
                 <div className="flex-1 border border-slate-800/50 rounded bg-[#0a0f16] flex items-center justify-center text-slate-500 overflow-hidden">
-
                   <CryptoHealthMap />
-
                 </div>
 
               </div>
-
-              {/* TOP FINDINGS */}
 
               <div className="col-span-1 bg-[#111827] border border-slate-800 rounded-xl p-6 flex flex-col">
 
@@ -905,17 +805,10 @@ export default function App() {
                   )}
 
                 </div>
-
               </div>
-
             </div>
-
           </>
         )}
-
-        {/* =====================================================
-            HEALTH MAP TAB
-        ===================================================== */}
 
         {activeTab === 'health_map' && (
           <div className="flex-1 bg-[#111827] border border-slate-800 rounded-xl p-6 overflow-hidden">
@@ -933,17 +826,11 @@ export default function App() {
             </div>
 
             <div className="h-[calc(100%-80px)] min-h-[500px] bg-[#0a0f16] rounded-xl border border-slate-800 overflow-hidden">
-
               <CryptoHealthMap />
-
             </div>
 
           </div>
         )}
-
-        {/* =====================================================
-            FINDINGS TAB
-        ===================================================== */}
 
         {activeTab === 'findings' && (
           <div className="flex-1">
@@ -967,15 +854,9 @@ export default function App() {
                 </p>
 
               </div>
-
             )}
-
           </div>
         )}
-
-        {/* =====================================================
-            AI INSIGHTS TAB
-        ===================================================== */}
 
         {activeTab === 'ai_insights' && (
           <div className="flex-1">
@@ -989,8 +870,34 @@ export default function App() {
           </div>
         )}
 
-      </div>
+        {activeTab === 'ast' && (
+          <div className="flex-1">
 
+            {scanData ? (
+
+              <ASTVisualizer
+                data={scanData.ast}
+                findings={scanData.findings}
+              />
+
+            ) : (
+
+              <div className="bg-[#111827] border border-slate-800 rounded-xl flex flex-col items-center justify-center p-8 min-h-[400px]">
+
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  AST Analysis
+                </h3>
+
+                <p className="text-slate-500">
+                  No AST data available. Run a scan first.
+                </p>
+
+              </div>
+            )}
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
