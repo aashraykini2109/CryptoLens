@@ -2,46 +2,104 @@ import React, { useState, useEffect } from 'react';
 import { Sparkles, ShieldCheck, AlertTriangle, Code2, Send, Terminal } from 'lucide-react';
 
 export default function AICopilot({ initialFinding }) {
-  const [targetAlgo, setTargetAlgo] = useState(initialFinding?.algo || 'RSA-1024');
-  const [targetFile, setTargetFile] = useState(initialFinding?.file || 'src/auth/login.js');
+  const [targetAlgo, setTargetAlgo] = useState(
+  initialFinding?.algorithm || initialFinding?.algo || 'RSA-1024'
+);
+  const [targetFile, setTargetFile] = useState(
+  initialFinding?.file || 'src/auth/login.js'
+);
+
+const [targetCode, setTargetCode] = useState(
+  initialFinding?.code_context ||
+  initialFinding?.code ||
+  ''
+);
   const [loading, setLoading] = useState(false);
   const [remediationData, setRemediationData] = useState(null);
   
   const [chatMessages, setChatMessages] = useState([]);
   const [inputQuestion, setInputQuestion] = useState('');
 
-  const fetchRemediation = async (algo, file) => {
-    setLoading(true);
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/remediate', {
+  const fetchRemediation = async (algo, file, codeContext = '') => {
+  setLoading(true);
+
+  try {
+    const response = await fetch(
+      'http://127.0.0.1:8000/api/remediate',
+      {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ algo, file })
-      });
-      const data = await response.json();
-      setRemediationData(data);
-      setChatMessages([
-        {
-          role: 'assistant',
-          text: `I've analyzed **${algo}** in \`${file}\`. Here is the NIST-compliant migration path.`
-        }
-      ]);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          algo,
+          file,
+          code_context: codeContext,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data?.detail || 'AI remediation failed.'
+      );
     }
-  };
+
+    setRemediationData(data);
+
+    setChatMessages([
+      {
+        role: 'assistant',
+        text: `I've analyzed **${algo}** in \`${file}\`. Here is the NIST-compliant migration path.`,
+      },
+    ]);
+  } catch (err) {
+    console.error('Remediation Error:', err);
+
+    setRemediationData(null);
+
+    setChatMessages([
+      {
+        role: 'assistant',
+        text: 'Unable to generate AI remediation. Make sure Ollama and the FastAPI backend are running.',
+      },
+    ]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
-    if (initialFinding?.algo) {
-      setTargetAlgo(initialFinding.algo);
-      setTargetFile(initialFinding.file || 'unknown');
-      fetchRemediation(initialFinding.algo, initialFinding.file || 'unknown');
-    } else {
-      fetchRemediation('RSA-1024', 'src/auth/login.js');
-    }
-  }, [initialFinding]);
+  if (initialFinding) {
+    const algo =
+      initialFinding.algorithm ||
+      initialFinding.algo ||
+      'RSA-1024';
+
+    const file =
+      initialFinding.file ||
+      'unknown';
+
+    const code =
+      initialFinding.code_context ||
+      initialFinding.code ||
+      '';
+
+    setTargetAlgo(algo);
+    setTargetFile(file);
+    setTargetCode(code);
+
+    fetchRemediation(algo, file, code);
+  } else {
+    fetchRemediation(
+      'RSA-1024',
+      'src/auth/login.js',
+      ''
+    );
+  }
+}, [initialFinding]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -101,7 +159,13 @@ export default function AICopilot({ initialFinding }) {
               </div>
             </div>
             <button
-              onClick={() => fetchRemediation(targetAlgo, targetFile)}
+              onClick={() =>
+  fetchRemediation(
+    targetAlgo,
+    targetFile,
+    targetCode
+  )
+}
               disabled={loading}
               className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2 rounded-lg transition"
             >
@@ -135,8 +199,13 @@ export default function AICopilot({ initialFinding }) {
                 <Code2 className="w-4 h-4 text-orange-400" /> Automated Code Fix
               </h3>
               <pre className="bg-[#0a0f16] text-emerald-300 font-mono text-sm p-4 rounded-lg border border-slate-800/80 overflow-x-auto whitespace-pre-wrap">
-                {remediationData.codeSnippet}
-              </pre>
+  {typeof remediationData.codeSnippet === 'string'
+    ? remediationData.codeSnippet
+    : remediationData.codeSnippet?.insecure ||
+      remediationData.codeSnippet?.secure
+      ? `// ❌ Insecure Code\n${remediationData.codeSnippet.insecure || ''}\n\n// ✅ Secure Replacement\n${remediationData.codeSnippet.secure || ''}`
+      : JSON.stringify(remediationData.codeSnippet, null, 2)}
+</pre>
             </div>
           </>
         )}
