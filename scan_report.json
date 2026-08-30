@@ -1,102 +1,11 @@
 {
-    "health_score": 0,
-    "quantum_score": 90,
-    "summary": {
-        "critical": 7,
-        "quantum_vulnerable": 1,
-        "safe": 2
+    "health_score": 100,
+    "total_findings": 0,
+    "severity_summary": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
     },
-    "total_findings": 10,
-    "findings": [
-        {
-            "algorithm": "MD5",
-            "file": "C:\\Users\\tejar\\AppData\\Local\\Temp\\cryptolens_github_rsyg5zeh\\scan_report.json",
-            "line": 8,
-            "evidence": "\"evidence\": \"hashed = hashlib.md5(password.encode()).hexdigest()\",",
-            "severity": "CRITICAL",
-            "description": "MD5 is a cryptographically broken hashing algorithm and is vulnerable to collision attacks.",
-            "recommendation": "Replace MD5 with SHA-256 or SHA-3. For password storage, use a dedicated password hashing algorithm such as Argon2 or bcrypt."
-        },
-        {
-            "algorithm": "MD5",
-            "file": "C:\\Users\\tejar\\AppData\\Local\\Temp\\cryptolens_github_rsyg5zeh\\backend\\detection_rules.py",
-            "line": 3,
-            "evidence": "\"hashlib.md5\",",
-            "severity": "CRITICAL",
-            "description": "MD5 is a cryptographically broken hashing algorithm and is vulnerable to collision attacks.",
-            "recommendation": "Replace MD5 with SHA-256 or SHA-3. For password storage, use a dedicated password hashing algorithm such as Argon2 or bcrypt."
-        },
-        {
-            "algorithm": "SHA-1",
-            "file": "C:\\Users\\tejar\\AppData\\Local\\Temp\\cryptolens_github_rsyg5zeh\\backend\\detection_rules.py",
-            "line": 6,
-            "evidence": "\"hashlib.sha1\",",
-            "severity": "CRITICAL",
-            "description": "SHA-1 is cryptographically weak and collision attacks against it have been demonstrated.",
-            "recommendation": "Replace SHA-1 with SHA-256, SHA-3, or another modern cryptographic hash algorithm."
-        },
-        {
-            "algorithm": "SHA-256",
-            "file": "C:\\Users\\tejar\\AppData\\Local\\Temp\\cryptolens_github_rsyg5zeh\\backend\\detection_rules.py",
-            "line": 9,
-            "evidence": "\"hashlib.sha256\",",
-            "severity": "SAFE",
-            "description": "SHA-256 is a modern cryptographic hash algorithm suitable for many integrity and hashing use cases.",
-            "recommendation": "Continue using SHA-256 appropriately and ensure it is used with suitable constructions for the application's use case."
-        },
-        {
-            "algorithm": "AES",
-            "file": "C:\\Users\\tejar\\AppData\\Local\\Temp\\cryptolens_github_rsyg5zeh\\backend\\detection_rules.py",
-            "line": 12,
-            "evidence": "\"AES.new\",",
-            "severity": "SAFE",
-            "description": "AES is a modern symmetric encryption algorithm when used with secure key sizes and modes.",
-            "recommendation": "Prefer authenticated encryption modes such as AES-GCM and use securely generated keys."
-        },
-        {
-            "algorithm": "DES",
-            "file": "C:\\Users\\tejar\\AppData\\Local\\Temp\\cryptolens_github_rsyg5zeh\\backend\\detection_rules.py",
-            "line": 15,
-            "evidence": "\"DES.new\",",
-            "severity": "CRITICAL",
-            "description": "DES is an obsolete encryption algorithm with an insufficient key size and can be broken using modern computing resources.",
-            "recommendation": "Replace DES with AES using an authenticated encryption mode such as AES-GCM."
-        },
-        {
-            "algorithm": "RSA",
-            "file": "C:\\Users\\tejar\\AppData\\Local\\Temp\\cryptolens_github_rsyg5zeh\\backend\\detection_rules.py",
-            "line": 18,
-            "evidence": "\"RSA.generate\",",
-            "severity": "QUANTUM_VULNERABLE",
-            "description": "RSA is currently widely used but is vulnerable to future large-scale quantum attacks based on Shor's algorithm.",
-            "recommendation": "Plan migration toward NIST-standardized post-quantum cryptography for long-term protection."
-        },
-        {
-            "algorithm": "MD5",
-            "file": "C:\\Users\\tejar\\AppData\\Local\\Temp\\cryptolens_github_rsyg5zeh\\sample_project\\auth.py",
-            "line": 3,
-            "evidence": "# hashlib.md5 is an old algorithm",
-            "severity": "CRITICAL",
-            "description": "MD5 is a cryptographically broken hashing algorithm and is vulnerable to collision attacks.",
-            "recommendation": "Replace MD5 with SHA-256 or SHA-3. For password storage, use a dedicated password hashing algorithm such as Argon2 or bcrypt."
-        },
-        {
-            "algorithm": "MD5",
-            "file": "C:\\Users\\tejar\\AppData\\Local\\Temp\\cryptolens_github_rsyg5zeh\\sample_project\\auth.py",
-            "line": 7,
-            "evidence": "hashed = hashlib.md5(password.encode()).hexdigest()",
-            "severity": "CRITICAL",
-            "description": "MD5 is a cryptographically broken hashing algorithm and is vulnerable to collision attacks.",
-            "recommendation": "Replace MD5 with SHA-256 or SHA-3. For password storage, use a dedicated password hashing algorithm such as Argon2 or bcrypt."
-        },
-        {
-            "algorithm": "SHA-1",
-            "file": "C:\\Users\\tejar\\AppData\\Local\\Temp\\cryptolens_github_rsyg5zeh\\sample_project\\auth.py",
-            "line": 9,
-            "evidence": "text = \"hashlib.sha1\"",
-            "severity": "CRITICAL",
-            "description": "SHA-1 is cryptographically weak and collision attacks against it have been demonstrated.",
-            "recommendation": "Replace SHA-1 with SHA-256, SHA-3, or another modern cryptographic hash algorithm."
-        }
-    ]
+    "findings": []
 }

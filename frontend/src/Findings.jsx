@@ -12,7 +12,9 @@ import {
   ArrowRight
 } from 'lucide-react';
 
-export default function Findings({ onOpenAI }) {
+
+
+export default function Findings({ scanData, onSelectFinding }) {
 
   // ============================================================
   // STATE
@@ -601,13 +603,17 @@ export default function Findings({ onOpenAI }) {
                     <td className="px-6 py-5">
 
                       <button
-                        onClick={() => handleOpenAI(finding)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectFinding({
+                            algo: finding.algorithm || finding.algo || 'RSA-1024',
+                            file: finding.file || 'Unknown file'
+                          });
+                        }}
                         title="View AI remediation"
-                        className="text-orange-400 hover:text-orange-300 transition"
+                        className="p-2 text-orange-400 hover:text-orange-300 hover:bg-orange-500/10 rounded-lg transition"
                       >
-
                         <ArrowRight className="w-5 h-5" />
-
                       </button>
 
                     </td>

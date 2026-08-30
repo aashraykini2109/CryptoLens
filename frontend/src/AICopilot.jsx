@@ -43,24 +43,44 @@ export default function AICopilot({ initialFinding }) {
     }
   }, [initialFinding]);
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!inputQuestion.trim()) return;
 
     const userText = inputQuestion;
     setInputQuestion('');
+    
+    // Add user question to UI
     setChatMessages((prev) => [...prev, { role: 'user', text: userText }]);
 
-    // Simulated copilot chat response for offline testing
-    setTimeout(() => {
+    try {
+      // Send the question to your FastAPI backend
+      const response = await fetch('http://127.0.0.1:8000/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: userText,
+          algo: targetAlgo || 'Cryptography'
+        }),
+      });
+
+      const data = await response.json();
+
+      // Add the live AI response to the chat UI
       setChatMessages((prev) => [
         ...prev,
-        {
-          role: 'assistant',
-          text: `For FIPS compliance with ${targetAlgo}, prioritize migrating to Post-Quantum algorithms (like FIPS 203) or a hybrid approach to prevent "harvest now, decrypt later" attacks.`
-        }
+        { role: 'assistant', text: data.reply },
       ]);
-    }, 600);
+
+    } catch (error) {
+      console.error("Chat Error:", error);
+      setChatMessages((prev) => [
+        ...prev,
+        { role: 'assistant', text: "Connection error: Make sure your Python FastAPI server is running." },
+      ]);
+    }
   };
 
   return (
