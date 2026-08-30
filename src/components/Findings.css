@@ -1,0 +1,138 @@
+/* ─── FINDINGS ──────────────────────────────────────────────────── */
+.findings-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Controls bar */
+.findings-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+}
+
+.findings-search-wrap { position: relative; flex: 1; min-width: 200px; }
+.findings-search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); pointer-events: none;
+}
+.findings-search { padding-left: 36px !important; font-size: 0.85rem; padding-top: 8px !important; padding-bottom: 8px !important; }
+
+.findings-filters { display: flex; gap: 4px; flex-wrap: wrap; }
+.filter-pill {
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-dim);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+}
+.filter-pill:hover { border-color: var(--border-glow); color: var(--text-primary); }
+.filter-pill--active {
+  background: rgba(255,69,0,0.15);
+  border-color: var(--accent-ember);
+  color: var(--accent-ember);
+  box-shadow: 0 0 8px rgba(255,69,0,0.2);
+}
+
+.findings-sort {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.sort-select {
+  background: transparent;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  outline: none;
+}
+.sort-select:focus { border-color: var(--accent-ember); }
+.sort-select option { background: var(--bg-card); }
+
+/* Count */
+.findings-count { font-size: 0.82rem; padding: 0 0.25rem; }
+
+/* List */
+.findings-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+/* Card */
+.finding-card { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.finding-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.finding-left { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+.finding-algo {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.inspect-btn { flex-shrink: 0; }
+
+.finding-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+.finding-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.finding-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.finding-meta-item svg { color: var(--accent-ember); flex-shrink: 0; }
+
+.finding-file {
+  color: var(--text-mono);
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.finding-context-code {
+  color: var(--text-mono);
+  background: rgba(255,69,0,0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.73rem;
+}
+
+/* Empty state */
+.findings-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}

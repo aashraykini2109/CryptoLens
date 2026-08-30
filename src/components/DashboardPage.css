@@ -1,0 +1,63 @@
+/* ─── DASHBOARD PAGE ─────────────────────────────────────────────── */
+.dash-root { display: flex; flex-direction: column; gap: 1.25rem; padding: 2rem; }
+.dash-header { margin-bottom: 0.25rem; }
+.dash-title { font-size: 1.75rem; font-weight: 800; color: #F5E9E9; margin: 0 0 0.25rem; letter-spacing: -0.02em; }
+.dash-sub   { font-size: 0.82rem; color: #6B3B3B; margin: 0; }
+
+.dash-top {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+@media (max-width: 768px) { .dash-top { grid-template-columns: 1fr; } }
+
+.dash-card {
+  background: #0F0303;
+  border: 1px solid rgba(239,68,68,0.1);
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+.dash-card:hover { border-color: rgba(255,69,0,0.22); }
+
+.dash-dial-card { padding: 1.5rem; display: flex; align-items: center; justify-content: center; }
+.dash-dial-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+.dash-dial-label-top { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #4B2020; }
+.dash-dial-svg  { width: 150px; height: 150px; }
+.dash-dial-grade { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* Metric cards */
+.dash-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+@media (max-width: 480px) { .dash-metrics { grid-template-columns: 1fr; } }
+
+.dash-metric-card { padding: 1.1rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.dm-top { display: flex; align-items: center; justify-content: space-between; }
+.dm-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.dm-value { font-size: 1.9rem; font-weight: 800; line-height: 1; }
+.dm-label { font-size: 0.78rem; font-weight: 600; color: #8B5B5B; }
+.dm-desc  { font-size: 0.7rem; color: #4B2020; }
+.dm-bar-track { height: 3px; background: rgba(255,69,0,0.08); border-radius: 99px; overflow: hidden; margin-top: 0.3rem; }
+.dm-bar { height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+
+/* Breakdown */
+.dash-breakdown { padding: 1.25rem; }
+.db-title { display: flex; align-items: center; gap: 7px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6B3B3B; margin-bottom: 1rem; }
+.db-row { display: grid; grid-template-columns: 130px 1fr 36px; align-items: center; gap: 1rem; margin-bottom: 0.6rem; }
+.db-row-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.db-track { height: 6px; background: rgba(255,69,0,0.07); border-radius: 99px; overflow: hidden; }
+.db-fill  { height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+.db-count { font-size: 0.78rem; text-align: right; }
+
+/* Alert */
+.dash-alert {
+  padding: 1rem 1.25rem;
+  display: flex; align-items: flex-start; gap: 0.85rem;
+  background: rgba(245,158,11,0.04);
+  border-color: rgba(245,158,11,0.2) !important;
+}
+.da-title { font-size: 0.85rem; font-weight: 700; color: #F5E9E9; margin-bottom: 0.25rem; }
+.da-body  { font-size: 0.78rem; color: #6B3B3B; line-height: 1.65; }
